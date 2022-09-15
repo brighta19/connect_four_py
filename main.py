@@ -128,7 +128,7 @@ def print_board():
         print("|")
     for row in range(ROWS):
         print(f" {row+1}", end="")
-    print()
+    print("\n")
 
 def print_title():
     print("WELCOME TO CONNECT 4!!")
