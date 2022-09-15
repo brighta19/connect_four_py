@@ -10,6 +10,15 @@ Symbols = {
     FIRST_PLAYER: "x",
     SECOND_PLAYER: "o"
 }
+CountDirection = {
+    "down": (1, 0),
+    "left": (0, -1),
+    "right": (0, 1),
+    "up_left": (-1, -1),
+    "up_right": (-1, 1),
+    "down_left": (1, -1),
+    "down_right": (1, 1)
+}
 board = [] # 2D list, rows of columns
 spots_left = 0
 spots_left_per_column = [] # list, columns
@@ -146,44 +155,26 @@ def check_for_win():
         or check_for_diagonal_bottomleft_topright_win()
 
 def check_for_vertical_win():
-    return 1 + count_down() >= CONNECT
+    return 1 + count_in_direction(CountDirection["down"]) >= CONNECT
 
 def check_for_horizontal_win():
-    count = 1 + count_left() + count_right()
+    count = 1 + count_in_direction(CountDirection["left"]) + count_in_direction(CountDirection["right"])
     return count >= CONNECT
 
 def check_for_diagonal_topleft_bottomright_win():
-    count = 1 + count_upleft() + count_downright()
+    count = 1 + count_in_direction(CountDirection["up_left"]) + count_in_direction(CountDirection["down_right"])
     return count >= CONNECT
 
 def check_for_diagonal_bottomleft_topright_win():
-    count = 1 + count_downleft() + count_upright()
+    count = 1 + count_in_direction(CountDirection["down_left"]) + count_in_direction(CountDirection["up_right"])
     return count >= CONNECT
 
-def count_down():
-    return count_in_direction(latest_piece["row"], latest_piece["column"], 1, 0) - 1
+def count_in_direction(direction):
+    return count_in_direction_recursive(latest_piece["row"], latest_piece["column"], direction) - 1
 
-def count_left():
-    return count_in_direction(latest_piece["row"], latest_piece["column"], 0, -1) - 1
-
-def count_right():
-    return count_in_direction(latest_piece["row"], latest_piece["column"], 0, 1) - 1
-
-def count_upleft():
-    return count_in_direction(latest_piece["row"], latest_piece["column"], -1, -1) - 1
-
-def count_upright():
-    return count_in_direction(latest_piece["row"], latest_piece["column"], -1, 1) - 1
-
-def count_downleft():
-    return count_in_direction(latest_piece["row"], latest_piece["column"], 1, -1) - 1
-
-def count_downright():
-    return count_in_direction(latest_piece["row"], latest_piece["column"], 1, 1) - 1
-
-def count_in_direction(row, column, y, x):
-    return 1 + count_in_direction(row + y, column + x, y, x) if is_current_piece(row, column) else 0
-
+def count_in_direction_recursive(row, column, direction):
+    return 1 + count_in_direction_recursive(row + direction[0], column + direction[1], direction) \
+        if is_current_piece(row, column) else 0
 
 if __name__ == "__main__":
     main()
