@@ -11,7 +11,8 @@ Symbols = {
     SECOND_PLAYER: "o"
 }
 board = [] # 2D list, rows of columns
-spots_left = [] # list, columns
+spots_left = 0
+spots_left_per_column = [] # list, columns
 latest_piece = {} # dict {row, column}
 current_piece = FIRST_PLAYER
 
@@ -32,6 +33,12 @@ def main():
             print_column_full()
             continue
 
+        draw = check_for_draw()
+        if draw:
+            print_board()
+            print_draw()
+            break
+
         win = check_for_win()
         if win:
             print_board()
@@ -51,8 +58,9 @@ def reset_board():
     board = [[0 for i in range(COLUMNS)] for i in range(ROWS)]
 
 def reset_spots_left():
-    global spots_left
-    spots_left = [ROWS for i in range(COLUMNS)]
+    global spots_left_per_column, spots_left
+    spots_left = ROWS * COLUMNS
+    spots_left_per_column = [ROWS for i in range(COLUMNS)]
 
 def reset_current_piece():
     global current_piece
@@ -62,9 +70,10 @@ def get_symbol(row, column):
     return Symbols[board[row][column]]
 
 def insert_piece_into_board(column):
-    global latest_piece
+    global latest_piece, spots_left
     if can_place_in_column(column):
-        row = spots_left[column] = spots_left[column] - 1
+        row = spots_left_per_column[column] = spots_left_per_column[column] - 1
+        spots_left -= 1
         board[row][column] = current_piece
         latest_piece = {
             "row": row,
@@ -74,7 +83,7 @@ def insert_piece_into_board(column):
     return False
 
 def can_place_in_column(column):
-    return spots_left[column] > 0
+    return spots_left_per_column[column] > 0
 
 def is_valid_column(column):
     return 0 <= column < COLUMNS
@@ -123,6 +132,12 @@ def print_invalid_column():
 
 def print_win():
     print(f"Player {current_piece} wins!")
+
+def print_draw():
+    print("It's a draw!")
+
+def check_for_draw():
+    return spots_left == 0
 
 def check_for_win():
     return check_for_vertical_win() \
