@@ -42,16 +42,16 @@ def main():
             print_column_full()
             continue
 
-        draw = check_for_draw()
-        if draw:
-            print_board()
-            print_draw()
-            break
-
         win = check_for_win()
         if win:
             print_board()
             print_win()
+            break
+
+        draw = check_for_draw()
+        if draw:
+            print_board()
+            print_draw()
             break
 
         next_player()
